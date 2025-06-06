@@ -6,6 +6,7 @@
 #include "../libs/json.hpp"
 #include "StateMachine/StateMachine.h"
 #include "StateMachine/IdleState.h"
+#include "UI/Button.h"
 
 using json = nlohmann::json;
 
@@ -36,17 +37,23 @@ int main() {
 
     stateMachine.ChangeState(&idleState);
 
+    Button testButton(LoadTexture("assets/graphics/ui/Button1.png"), { 100, 100 });
+    Button testButton2(LoadTexture("assets/graphics/ui/Button1.png"), { 200, 100 });
+
     // Main game loop
     while (!WindowShouldClose())
     {
         // Game Logic Update
+        testButton.Update();
+        testButton2.Update();
 
         // Drawing
         BeginDrawing();
             ClearBackground(WHITE);
 
             DrawMap(loadedJsonMap, tileSet, tileSize, tileSetColumns);
-
+            testButton.Draw();
+            testButton2.Draw();
         EndDrawing();
     } // Main game loop end
 

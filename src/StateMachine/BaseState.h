@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "StateMachine.h"
-
 class BaseState
 {
 public:
