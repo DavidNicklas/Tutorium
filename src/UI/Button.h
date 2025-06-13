@@ -12,17 +12,10 @@ enum ButtonState
     None,
     Hovered,
     Pressed,
-    Disabled
 };
 
 class Button
 {
-private:
-    ButtonState state = ButtonState::None;
-    Rectangle bounds = { 0, 0, 0, 0 };
-    Texture2D sprite;
-    Vector2 position;
-
 public:
     Button(Texture2D sprite, Vector2 pos)
     {
@@ -31,50 +24,19 @@ public:
         this->bounds = { position.x, position.y, (float)sprite.width, (float)sprite.height };
         this->state = ButtonState::None;
     }
+    ~Button() { UnloadTexture(sprite); }
 
-    void Update()
-    {
-        Vector2 mousePos = GetMousePosition();
-        if (CheckCollisionPointRec(mousePos, bounds))
-        {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            {
-                state = ButtonState::Pressed;
-            }
-            else
-            {
-                state = ButtonState::Hovered;
-            }
-        }
-        else
-        {
-            state = ButtonState::None;
-        }
-    }
+    void Update();
+    void Draw();
 
-    void Draw()
-    {
-        switch (state)
-        {
-            case ButtonState::None:
-                DrawTexture(sprite, position.x, position.y, WHITE);
-                break;
-            case ButtonState::Hovered:
-                DrawTexture(sprite, position.x, position.y, Fade(WHITE, 0.8f));
-                break;
-            case ButtonState::Pressed:
-                DrawTexture(sprite, position.x, position.y, Fade(WHITE, 0.5f));
-                break;
-            case ButtonState::Disabled:
-                DrawTexture(sprite, position.x, position.y, Fade(WHITE, 0.3f));
-                break;
-        }
-
-        DrawRectangleRoundedLines(bounds, 0, 0, 5, GREEN);
-    }
+private:
+    ButtonState state = ButtonState::None;
+    Rectangle bounds = { 0, 0, 0, 0 };
+    Texture2D sprite;
+    Vector2 position;
 };
 
-
+// This could be a future improvement to handle a list of buttons and handle the switch between buttons
 class ButtonList
 {
 public:

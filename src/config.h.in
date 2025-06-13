@@ -10,5 +10,7 @@ namespace Game {
     inline constexpr int ScreenWidth = 480;
     inline constexpr int ScreenHeight = 320;
 
+    inline constexpr int TileSize = 16;
+
     //#define GAME_START_FULLSCREEN
 }
