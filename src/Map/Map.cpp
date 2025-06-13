@@ -11,12 +11,13 @@ Map::Map(const std::string& tileSetJsonPath, const std::string& tileSetPath)
 {
     json tileSetJson = JsonUtility::LoadJson(tileSetJsonPath);
     ParseAnimatedTiles(tileSetJson);
+    ParseCollisionTiles(tileSetJson);
     tileSet = LoadTileSet(tileSetPath);
 
     tileSetColumns = tileSet.width / Game::TileSize; // Calculate the number of columns in the tile set
 }
 
-Texture2D Map::LoadTileSet(const std::string &path)
+Texture2D Map::LoadTileSet(const std::string& path)
 {
     return LoadTexture(path.c_str());
 }
@@ -38,6 +39,30 @@ void Map::ParseAnimatedTiles(const json& tileSetJson)
                 animatedTile.tileID = animatedTileID; // Set the tile ID for the animated tile
             }
             animatedTilesList.push_back(animatedTile);
+        }
+    }
+}
+
+void Map::ParseCollisionTiles(const json& tileSetJson)
+{
+    if (!tileSetJson.contains("tiles")) return;
+
+    for (const auto& tile : tileSetJson["tiles"])
+    {
+        int tileID = tile["id"];
+        if (tile.contains("objectgroup"))
+        {
+            const auto& objectGroup = tile["objectgroup"];
+            for (const auto& object : objectGroup["objects"])
+            {
+                Rectangle collisionRect = {
+                    static_cast<float>(object["x"]),
+                    static_cast<float>(object["y"]),
+                    static_cast<float>(object["width"]),
+                    static_cast<float>(object["height"])
+                };
+                tileColliders[tileID].push_back(collisionRect);
+            }
         }
     }
 }
@@ -75,7 +100,6 @@ void Map::Draw()
                     if (animatedTile.tileID == tileID)
                     {
                         tileID = animatedTile.GetCurrentFrameTileID();
-                        std::cout << animatedTile.tileID << " is animated with frame: " << animatedTile.GetCurrentFrameTileID() << "\n";
                     }
                 }
 
@@ -97,6 +121,12 @@ void Map::Draw()
             }
         }
     }
+
+    // Draw Collision rec
+    for (const auto& collider : solidColliders)
+    {
+        DrawRectangleRec(collider, { 255, 0, 0, 100 }); // Semi-transparent red for visibility
+    }
 }
 
 void Map::AddLevel(int number, const std::string& name, const std::string& mapPath)
@@ -117,6 +147,11 @@ void Map::SetCurrentLevel(int number) {
     if (index >= 0 && index < levels.size()) {
         currentLevelIndex = index;
     }
+    else {
+        std::cerr << "Invalid level index: " << number << std::endl;
+    }
+
+    GenerateWorldCollisionRecs();
 }
 
 Level& Map::GetLevel(int index)
@@ -135,5 +170,41 @@ void Map::UpdateAnimations()
     for (auto& tile : animatedTilesList)
     {
         tile.Update();
+    }
+}
+
+void Map::GenerateWorldCollisionRecs()
+{
+    solidColliders.clear();
+
+    const auto& mapJson = GetCurrentLevel().GetMap();
+    const int tileSize = Game::TileSize;
+
+    for (const auto& layer : mapJson["layers"]) {
+        if (layer["type"] != "tilelayer") continue;
+
+        int layerWidth = layer["width"];
+        const auto& data = layer["data"];
+
+        for (int y = 0; y < layer["height"]; y++) {
+            for (int x = 0; x < layerWidth; x++) {
+                int index = y * layerWidth + x;
+                int rawTileID = data[index];
+                if (rawTileID == 0) continue;
+
+                int tileID = rawTileID - 1;
+                if (tileColliders.count(tileID)) {
+                    for (const auto& rect : tileColliders[tileID]) {
+                        Rectangle worldRect = {
+                                x * tileSize + rect.x,
+                                y * tileSize + rect.y,
+                                rect.width,
+                                rect.height
+                        };
+                        solidColliders.push_back(worldRect);
+                    }
+                }
+            }
+        }
     }
 }

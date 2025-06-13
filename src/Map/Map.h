@@ -25,6 +25,8 @@ public:
     Level& GetCurrentLevel() { return GetLevel(currentLevelIndex); }
     Level& GetLevel(int index);
 
+    const std::vector<Rectangle>& GetSolidColliders() const { return solidColliders; }
+
 private:
     // General
     static Texture2D LoadTileSet(const std::string& path);
@@ -41,6 +43,12 @@ private:
     // Animations
     void ParseAnimatedTiles(const json& tileSetJson);
     void UpdateAnimations();
-
     std::vector<AnimatedTile> animatedTilesList;
+
+    // Collisions
+    void ParseCollisionTiles(const json& tileSetJson);
+    void GenerateWorldCollisionRecs();
+    std::unordered_map<int, std::vector<Rectangle>> tileColliders;
+    std::vector<Rectangle> solidColliders;
+
 };

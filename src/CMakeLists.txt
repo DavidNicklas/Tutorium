@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(${PROJECT_NAME} main.cpp StateMachine/BaseState.cpp StateMachine/BaseState.h StateMachine/IdleState.cpp StateMachine/IdleState.h StateMachine/StateMachine.cpp StateMachine/StateMachine.h UI/Button.cpp UI/Button.h Map/Map.cpp Map/Map.h Map/AnimatedTile.hpp ../libs/JsonUtility.hpp Map/Level.cpp Map/Level.h)
+add_executable(${PROJECT_NAME} main.cpp StateMachine/BaseState.cpp StateMachine/BaseState.h StateMachine/IdleState.cpp StateMachine/IdleState.h StateMachine/StateMachine.cpp StateMachine/StateMachine.h UI/Button.cpp UI/Button.h Map/Map.cpp Map/Map.h Map/AnimatedTile.hpp ../libs/JsonUtility.hpp Map/Level.cpp Map/Level.h Character/Player.cpp Character/Player.h)
 
 # Add config.h.in file
 configure_file(config.h.in config.h)

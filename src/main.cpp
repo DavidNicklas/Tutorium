@@ -4,16 +4,15 @@
 #include "config.h"
 #include "../libs/json.hpp"
 #include "StateMachine/StateMachine.h"
-#include "StateMachine/IdleState.h"
-#include "UI/Button.h"
 #include "Map/Map.h"
+#include "Character/Player.h"
 
 using json = nlohmann::json;
 
 int main() {
     // Project name, screen size, fullscreen mode etc. can be specified in the config.h.in file
     InitWindow(Game::ScreenWidth, Game::ScreenHeight, Game::PROJECT_NAME);
-    SetTargetFPS(60);
+    //SetTargetFPS(60);
 
 #ifdef GAME_START_FULLSCREEN
     ToggleFullscreen();
@@ -22,26 +21,23 @@ int main() {
     // Your own initialization code here
     Map map("assets/maps/TileSet.json", "assets/graphics/tilesets/Tileset.png");
     map.AddLevel(1, "Level 1", "assets/maps/TutoriumSampleMap.json");
+    map.SetCurrentLevel(1);
 
-    // State Machine Initialization
-    StateMachine stateMachine;
-    IdleState idleState;
-
-    stateMachine.ChangeState(&idleState);
-
-    Button testButton(LoadTexture("assets/graphics/ui/Button1.png"), { 100, 100 });
+    Player player;
 
     // Main game loop
     while (!WindowShouldClose())
     {
         // Game Logic Update
-        testButton.Update();
+        player.Move(map.GetSolidColliders());
 
         // Drawing
         BeginDrawing();
             ClearBackground(WHITE);
             map.Draw();
-            testButton.Draw();
+            player.Draw();
+
+            DrawFPS(Game::ScreenWidth - 100, 10);
         EndDrawing();
     } // Main game loop end
 
