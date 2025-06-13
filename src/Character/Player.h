@@ -28,5 +28,5 @@ public:
 
 private:
     float movementSpeed = 100.0f;
-    float playerRadius = 8.0f;
+    float playerRadius = 5.0f;
 };

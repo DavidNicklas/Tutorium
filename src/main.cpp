@@ -12,7 +12,7 @@ using json = nlohmann::json;
 int main() {
     // Project name, screen size, fullscreen mode etc. can be specified in the config.h.in file
     InitWindow(Game::ScreenWidth, Game::ScreenHeight, Game::PROJECT_NAME);
-    //SetTargetFPS(60);
+    SetTargetFPS(60);
 
 #ifdef GAME_START_FULLSCREEN
     ToggleFullscreen();

@@ -13,16 +13,36 @@ void Player::Move(const std::vector<Rectangle>& colliders) {
 
     if (dir.x == 0 && dir.y == 0) return;
 
+    // Normalize to achieve same speed in all directions
     dir = Vector2Normalize(dir);
 
     // Frame-independent speed
     float delta = GetFrameTime();
-    Vector2 velocity = Vector2Scale(dir, movementSpeed * delta);
-    Vector2 next = Vector2Add(position, velocity);
+    float moveAmount = movementSpeed * delta;
 
-    Rectangle nextBounds = { next.x - playerRadius, next.y - playerRadius, playerRadius * 2, playerRadius * 2 };
-    if (CanMoveTo(nextBounds, colliders)) {
-        position = next;
+    // Separate horizontal and vertical movement to avoid diagonal speed increase
+    // Horizontal movement
+    Vector2 nextPosX = { position.x + dir.x * moveAmount, position.y };
+    Rectangle boundsX = {
+            nextPosX.x - playerRadius,
+            nextPosX.y - playerRadius,
+            playerRadius * 2,
+            playerRadius * 2
+    };
+    if (CanMoveTo(boundsX, colliders)) {
+        position.x = nextPosX.x;
+    }
+
+    // Vertical movement
+    Vector2 nextPosY = { position.x, position.y + dir.y * moveAmount };
+    Rectangle boundsY = {
+            nextPosY.x - playerRadius,
+            nextPosY.y - playerRadius,
+            playerRadius * 2,
+            playerRadius * 2
+    };
+    if (CanMoveTo(boundsY, colliders)) {
+        position.y = nextPosY.y;
     }
 }
 
